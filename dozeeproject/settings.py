@@ -11,7 +11,6 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 import os
 from pathlib import Path
-import os
 import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -31,7 +30,7 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'piga-code-nyingi-hapa-luja')
 DEBUG = os.environ.get('DJANGO_DEBUG', 'False') == 'True'
 
 # Inasoma ALLOWED_HOSTS (Ili website ifunguke kishua)
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '.onrender.com,localhost,127.0.0.1').split(',')
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'dozeeproject.onrender.com,localhost,127.0.0.1').split(',')
 # Application definition
 
 INSTALLED_APPS = [
