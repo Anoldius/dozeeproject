@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 import os
 from pathlib import Path
+import os
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -21,16 +23,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 
-# USIWEKE SECRET_KEY WAZI LIVE!
+
+# Inasoma SECRET_KEY uliyoweka Render
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'piga-code-nyingi-hapa-luja')
 
-# ZIMA DEBUG LIVE
+# Inasoma DEBUG (Kumbuka uliweka 'False' kule Render)
 DEBUG = os.environ.get('DJANGO_DEBUG', 'False') == 'True'
 
-# RUHUSU HOSTS ZA BURE
-ALLOWED_HOSTS = ['*', '.localhost', '127.0.0.1', '[::1]'] 
-# Baadaye tutaweka URL ya hosting hapa
-
+# Inasoma ALLOWED_HOSTS (Ili website ifunguke kishua)
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '.onrender.com,localhost,127.0.0.1').split(',')
 # Application definition
 
 INSTALLED_APPS = [
@@ -79,15 +80,13 @@ WSGI_APPLICATION = 'dozeeproject.wsgi.application'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'dozee_db',
-        'USER': 'dozee_admin',
-        'PASSWORD': 'dozee_pass',
-        'HOST': 'db', # Hapa tunatumia jina la huduma tuliloweka kwenye docker-compose
-        'PORT': '5432',
-    }
+    'default': dj_database_url.config(
+        default=os.environ.get('DATABASE_URL'),
+        conn_max_age=600,
+        ssl_require=True
+    )
 }
+
 
 
 # Password validation
