@@ -1,0 +1,29 @@
+services:
+  db:
+    image: postgres:15
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+
+    environment:
+      - POSTGRES_DB=dozee_db
+      - POSTGRES_USER=dozee_admin
+      - POSTGRES_PASSWORD=dozee_pass
+
+  web:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/app
+      - ./media:/app/media  # Hii line hapa
+    ports:
+      - "8000:8000"
+    environment:
+      - DB_NAME=dozee_db
+      - DB_USER=dozee_admin
+      - DB_PASS=dozee_pass
+      - DB_HOST=db
+    depends_on:
+      - db
+
+volumes:
+  postgres_data:

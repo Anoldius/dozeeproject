@@ -1,0 +1,255 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dozee Imara Blocks | Dodoma</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'blocks/css/style.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="{% url 'home' %}">DOZEE <span class="text-warning">BLOCKS</span></a>
+        
+        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto align-items-center">
+                <li class="nav-item">
+                    <a class="nav-link px-3 active" href="{% url 'home' %}">Katalogi</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link px-3" href="{% url 'about' %}">Kuhusu Sisi</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link px-3" href="{% url 'contact' %}">Mawasiliano</a>
+                </li>
+                <li class="nav-item">
+                  {% if user.is_authenticated %}
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown">
+                <div class="bg-warning text-dark rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 35px; height: 35px; font-weight: bold;">
+                    {{ user.username|slice:":1"|upper }}
+                </div>
+                <span class="fw-bold text-warning">Mwanachama: {{ user.username }}</span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 mt-2">
+                <li><a class="dropdown-item py-2" href="#"><i class="bi bi-bag-check me-2"></i>Oda Zangu</a></li>
+                <li><a class="dropdown-item py-2" href="#"><i class="bi bi-person-gear me-2"></i>Mipangilio</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item py-2 text-danger" href="{% url 'logout' %}"><i class="bi bi-box-arrow-right me-2"></i>Toka (Logout)</a></li>
+            </ul>
+        </li>
+    {% else %}
+        <li class="nav-item">
+            <a class="nav-link btn btn-warning text-dark fw-bold px-4 ms-lg-3 rounded-pill shadow-sm" href="{% url 'membership' %}">Dozee Membership</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link ms-2 small text-muted" href="{% url 'login' %}">Ingia (Login)</a>
+        </li>
+    {% endif %}
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<section class="hero-section text-center py-5">
+    <div class="container py-4">
+        <h1 class="display-4 fw-bold">Matofali Imara kwa Ujenzi wa Kisasa</h1>
+        <p class="lead text-muted">Tunafanya delivery mkoa mzima wa Dodoma kwa haraka na usalama.</p>
+        <a href="#katalogi" class="btn btn-warning btn-lg fw-bold px-5 rounded-pill mt-3 shadow">Tazama Katalogi</a>
+    </div>
+</section>
+
+<div class="container my-5 py-4" id="katalogi">
+    <h2 class="text-center mb-5 fw-bold">Katalogi ya Bidhaa</h2>
+    <div class="row g-4">
+        {% for block in blocks %}
+        <div class="col-md-4">
+            <div class="card h-100 block-card shadow-sm border-0">
+                <div class="coming-soon-container">
+                    {% with b_name=block.name|lower %}
+                    {% if "pavers" in b_name or "vigae" in b_name %}
+                    <div class="coming-soon-overlay">
+                        <div class="coming-soon-text">INAKARIBIA KUANZA</div>
+                    </div>
+                    {% endif %}
+
+                    {% if block.image %}
+                    <img src="{{ block.image.url }}" 
+                         class="card-img-top {% if 'pavers' in b_name or 'vigae' in b_name %}coming-soon-img{% endif %}" 
+                         style="height: 240px; object-fit: cover;">
+                    {% endif %}
+                    {% endwith %}
+                </div>
+
+                <div class="card-body d-flex flex-column">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h5 class="card-title mb-0 fw-bold">{{ block.name }}</h5>
+                        <span class="badge badge-strength rounded-pill">{{ block.strength_rating }}</span>
+                    </div>
+                    <p class="card-text text-muted small flex-grow-1">Ubora uliothibitishwa kwa ajili ya uimara wa mjengo wako Dodoma.</p>
+                    
+                    {% with b_name=block.name|lower %}
+                    {% if "pavers" in b_name or "vigae" in b_name %}
+                        <p class="text-danger fw-bold mt-2 mb-1">Inakuja Hivi Karibuni!</p>
+                        <button class="btn btn-secondary w-100 fw-bold py-2 mt-2" disabled>HAKUNA MZIGO</button>
+                    {% else %}
+                        <h4 class="text-primary fw-bold mb-3">TSH {{ block.price_per_block|floatformat:0 }}</h4>
+                        <button class="btn btn-warning w-100 fw-bold py-2 order-btn shadow-sm" 
+                                data-bs-toggle="modal" 
+                                data-bs-target="#orderModal" 
+                                data-id="{{ block.id }}"
+                                data-name="{{ block.name }}" 
+                                data-price="{{ block.price_per_block|floatformat:0 }}">
+                            Agiza Sasa
+                        </button>
+                    {% endif %}
+                    {% endwith %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="modal fade" id="orderModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
+            <div class="modal-header bg-warning py-3">
+                <h5 class="modal-title fw-bold text-dark">Kamilisha Oda: <span id="selectedBlockName"></span></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <form id="orderForm">
+                    {% csrf_token %}
+                    <input type="hidden" id="selectedBlockId">
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Unahitaji Idadi Gani?</label>
+                        <input type="number" id="orderQty" class="form-control form-control-lg border-2" value="0" min="0" oninput="calculateTotal()">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Eneo la Delivery (Dodoma)</label>
+                        <select id="deliveryZone" class="form-select form-select-lg border-2" onchange="calculateTotal()">
+                            <option value="0" data-fee="0">Chagua Eneo...</option>
+                            {% for zone in zones %}
+                                <option value="{{ zone.id }}" data-fee="{{ zone.delivery_fee|floatformat:0 }}">{{ zone.zone_name }} (TSH {{ zone.delivery_fee|floatformat:0 }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label fw-bold text-primary">Namba ya Simu ya Malipo</label>
+                        <input type="text" id="custPhone" class="form-control form-control-lg border-2" placeholder="07XXXXXXXX" required>
+                    </div>
+
+                    <div class="bg-light p-3 border-0 rounded-4 shadow-sm">
+                        <h6 class="text-muted border-bottom pb-2 mb-3 fw-bold">Muhtasari wa Malipo:</h6>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Gharama ya Bidhaa:</span>
+                            <span class="fw-bold text-dark">TSH <span id="blocksCost">0</span></span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Usafiri:</span>
+                            <span class="fw-bold text-dark">TSH <span id="deliveryCost">0</span></span>
+                        </div>
+                        <hr class="my-3">
+                        <div class="d-flex justify-content-between fw-bold text-primary fs-4">
+                            <span>JUMLA KUU:</span>
+                            <span>TSH <span id="totalCost">0</span></span>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer border-0 p-4 pt-0">
+                <button type="button" onclick="submitOrder()" class="btn btn-success btn-lg w-100 fw-bold py-3 rounded-pill shadow">THIBITISHA ODA (LIPA)</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer class="py-5 text-center">
+    <div class="container" id="contact">
+        <h4 class="text-white mb-4">Wasiliana Nasi</h4>
+        <div class="d-flex justify-content-center gap-4 mb-4">
+            <a href="#" class="text-warning fs-3">Instagram</a>
+            <a href="#" class="text-warning fs-3">WhatsApp</a>
+        </div>
+        <p>&copy; 2026 Dozee Imara Blocks. Built with Innovation by Luja.</p>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    let currentBlockPrice = 0;
+
+    document.addEventListener('click', function (e) {
+        if (e.target && e.target.classList.contains('order-btn')) {
+            const button = e.target;
+            currentBlockPrice = parseInt(button.getAttribute('data-price')) || 0;
+            document.getElementById('selectedBlockId').value = button.getAttribute('data-id');
+            document.getElementById('selectedBlockName').innerText = button.getAttribute('data-name');
+            document.getElementById('orderQty').value = 0;
+            calculateTotal();
+        }
+    });
+
+    function calculateTotal() {
+        let qty = parseInt(document.getElementById('orderQty').value) || 0;
+        let zoneSelect = document.getElementById('deliveryZone');
+        let deliveryFee = parseInt(zoneSelect.options[zoneSelect.selectedIndex].getAttribute('data-fee')) || 0;
+        let blocksTotal = qty * currentBlockPrice;
+        let grandTotal = blocksTotal + deliveryFee;
+
+        document.getElementById('blocksCost').innerText = blocksTotal.toLocaleString('en-US');
+        document.getElementById('deliveryCost').innerText = deliveryFee.toLocaleString('en-US');
+        document.getElementById('totalCost').innerText = grandTotal.toLocaleString('en-US');
+    }
+
+    function submitOrder() {
+        const qty = document.getElementById('orderQty').value;
+        const zoneId = document.getElementById('deliveryZone').value;
+        const phone = document.getElementById('custPhone').value;
+        const blockId = document.getElementById('selectedBlockId').value;
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+        if (qty <= 0 || zoneId == "0" || phone.trim() === "") {
+            alert("Tafadhali jaza idadi, namba ya simu, na uchague eneo!");
+            return;
+        }
+
+        let formData = new FormData();
+        formData.append('block_id', blockId);
+        formData.append('quantity', qty);
+        formData.append('zone_id', zoneId);
+        formData.append('phone', phone);
+        formData.append('csrfmiddlewaretoken', csrfToken);
+
+        fetch('/place-order/', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                window.location.href = '/checkout/' + data.order_id + '/';
+            } else {
+                alert("Kosa: " + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert("Kuna hitilafu ya mawasiliano na server!");
+        });
+    }
+</script>
+</body>
+</html>

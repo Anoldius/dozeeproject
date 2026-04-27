@@ -1,0 +1,133 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Malipo - Dozee Imara Blocks</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'blocks/css/style.css' %}">
+</head>
+<body class="bg-light">
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-7">
+            <div class="text-center mb-4">
+                <h2 class="fw-bold text-dark">Thibitisha Malipo</h2>
+                <p class="text-muted">Oda yako <strong>#{{ order.id }}</strong> imepokelewa. Chagua mtandao hapa chini kulipia kishua.</p>
+            </div>
+
+            <div class="card shadow-sm border-0 p-4 mb-4">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="text-muted">Bidhaa:</span>
+                    <span class="fw-bold">{{ order.block_type.name }}</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="text-muted">Idadi:</span>
+                    <span class="fw-bold">{{ order.quantity }}</span>
+                </div>
+                <hr>
+                <div class="d-flex justify-content-between align-items-center fs-3 fw-bold text-primary">
+                    <span>JUMLA KUU:</span>
+                    <span>TSH {{ order.total_price|floatformat:0 }}</span>
+                </div>
+            </div>
+
+            <h5 class="mb-3 fw-bold text-secondary">Chagua Mtandao wa Malipo:</h5>
+            <div class="row g-3" id="paymentOptions">
+                <div class="col-6 col-md-3">
+                    <div class="card payment-card shadow-sm" onclick="startPush('VODACOM_TZA')">
+                        <img src="{% static 'blocks/images/M-pesa-logo.png' %}" class="logo-img mb-2" alt="M-Pesa">
+                        <small class="fw-bold">M-Pesa</small>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="card payment-card shadow-sm" onclick="startPush('TIGO_TZA')">
+                        <img src="{% static 'blocks/images/mixbyyas.png' %}" class="logo-img mb-2" alt="MiX by Yas">
+                        <small class="fw-bold">MiX by Yas</small>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="card payment-card shadow-sm" onclick="startPush('AIRTEL_TZA')">
+                        <img src="{% static 'blocks/images/airtel.png' %}" class="logo-img mb-2" alt="Airtel">
+                        <small class="fw-bold">Airtel Money</small>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="card payment-card shadow-sm" onclick="startPush('HALOTEL_TZA')">
+                        <img src="{% static 'blocks/images/halopesa.png' %}" class="logo-img mb-2" alt="HaloPesa">
+                        <small class="fw-bold">HaloPesa</small>
+                    </div>
+                </div>
+            </div>
+
+            <div id="loadingStatus" class="mt-5 text-center d-none">
+                <div id="loadingContent">
+                    <div class="spinner-border text-warning mb-3" role="status"></div>
+                    <h5 class="fw-bold">Tuma Ombi la Malipo...</h5>
+                    <p class="text-muted">Angalia simu yako <strong>{{ order.customer_phone }}</strong> uweke PIN punde utakapopokea ujumbe.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function startPush(provider) {
+    // 1. Ficha machaguo ya mitandao na onyesha loading
+    document.getElementById('paymentOptions').classList.add('opacity-50');
+    document.getElementById('paymentOptions').style.pointerEvents = 'none';
+    document.getElementById('loadingStatus').classList.remove('d-none');
+    
+    let formData = new FormData();
+    formData.append('order_id', '{{ order.id }}');
+    formData.append('provider', provider); // Hii ni muhimu kwa AzamPay
+    formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+
+    fetch('/process-payment/', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => {
+        if (!response.ok) throw new Error('Tatizo la Server');
+        return response.json();
+    })
+    .then(data => {
+        if (data.status === 'success') {
+            // 2. Badilisha muonekano kuwa Kijani (Success)
+            document.getElementById('loadingStatus').innerHTML = `
+                <div class="alert alert-success mt-4 shadow-lg border-0 p-4">
+                    <div class="mb-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" fill="currentColor" class="bi bi-check-circle-fill text-success" viewBox="0 0 16 16">
+                            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+                        </svg>
+                    </div>
+                    <h3 class="fw-bold">✅ Ombi Limetumwa!</h3>
+                    <p class="fs-5">Tafadhali weka PIN kwenye simu yako kamilisha malipo ya <strong>TSH {{ order.total_price|floatformat:0 }}</strong>.</p>
+                    <hr>
+                    <p class="small text-muted">Dozee Blocks itaanza maandalizi ya delivery punde tu muamala utakapokamilika.</p>
+                    <button onclick="window.location.href='/'" class="btn btn-success btn-lg px-5 fw-bold shadow-sm">Rudi Nyumbani</button>
+                </div>
+            `;
+            document.getElementById('paymentOptions').classList.add('d-none');
+        } else {
+            throw new Error(data.message || 'STK Push Imefeli');
+        }
+    })
+  .catch(error => {
+        document.getElementById('loadingStatus').innerHTML = `
+            <div class="alert alert-danger mt-4 shadow border-0">
+                <h4 class="fw-bold">⚠️ Hitilafu Imepokelewa</h4>
+                <p>Kosa: ${error.message}</p>
+                <small>Angalia VS Code Terminal kwa maelezo zaidi.</small>
+                <br><br>
+                <button onclick="location.reload()" class="btn btn-outline-danger btn-sm">Jaribu Tena</button>
+            </div>
+        `;
+    });
+}
+</script>
+
+</body>
+</html>
