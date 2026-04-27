@@ -125,6 +125,15 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
+
+
+# Default primary key field type
+# https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+# settings.py
+PAWAPAY_API_TOKEN = 'eyJraWQiOiIxIiwiYWxnIjoiRVMyNTYifQ.eyJ0dCI6IkFBVCIsInN1YiI6IjIwMjc5IiwibWF2IjoiMSIsImV4cCI6MjA5Mjg4NTY5NCwiaWF0IjoxNzc3MjY2NDk0LCJwbSI6IkRBRixQQUYiLCJqdGkiOiIzZGI4NmNiNS1iODJmLTRhZWQtOTJmYy0yZGJjMmY2OWNlNDUifQ.BISbvK5KvQF2rHWkRzsLkjL7O4xCOlQgmVJJjObfKf1b_dkr2DwqMjMXmgjMmR0xNWL6KA4VukkXe-SA3ScwWw' # Itoe kwenye Dashboard ya Sandbox
+PAWAPAY_BASE_URL = 'https://api.sandbox.pawapay.io'
+
 STATIC_URL = 'static/'
 import os
 # Sehemu ya Static Files (Production)
@@ -135,11 +144,3 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
-
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-# settings.py
-PAWAPAY_API_TOKEN = 'eyJraWQiOiIxIiwiYWxnIjoiRVMyNTYifQ.eyJ0dCI6IkFBVCIsInN1YiI6IjIwMjc5IiwibWF2IjoiMSIsImV4cCI6MjA5Mjg4NTY5NCwiaWF0IjoxNzc3MjY2NDk0LCJwbSI6IkRBRixQQUYiLCJqdGkiOiIzZGI4NmNiNS1iODJmLTRhZWQtOTJmYy0yZGJjMmY2OWNlNDUifQ.BISbvK5KvQF2rHWkRzsLkjL7O4xCOlQgmVJJjObfKf1b_dkr2DwqMjMXmgjMmR0xNWL6KA4VukkXe-SA3ScwWw' # Itoe kwenye Dashboard ya Sandbox
-PAWAPAY_BASE_URL = 'https://api.sandbox.pawapay.io'
-
