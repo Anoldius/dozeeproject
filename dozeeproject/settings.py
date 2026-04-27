@@ -32,6 +32,9 @@ DEBUG = os.environ.get('DJANGO_DEBUG', 'False') == 'True'
 # Inasoma ALLOWED_HOSTS (Ili website ifunguke kishua)
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'dozeeproject.onrender.com,localhost,127.0.0.1').split(',')
 # Application definition
+CSRF_TRUSTED_ORIGINS = [
+    'https://dozeeproject.onrender.com',
+]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -129,6 +132,9 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
